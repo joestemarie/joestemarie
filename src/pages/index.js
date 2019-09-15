@@ -1,10 +1,10 @@
 import React from "react"
-import { Link } from "gatsby"
+import { graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
-const IndexPage = () => (
+export default ({ data }) => (
   <Layout>
     <SEO title="Home" />
     <h1>Hello</h1>
@@ -14,10 +14,31 @@ const IndexPage = () => (
     <h1>Writing</h1>
     <p>I really enjoy writing and find that it helps me focus my thinking.</p>
     <ul>
-      <li><a href=""><b>Some post title.</b> (Some date).</a> With some simple two-line snippet that goes right here and would go on for only a few words to give folks a sense of what's here.</li>
-      <li><a href=""><b>Some post title.</b> (Some date).</a> With some simple two-line snippet that goes right here and would go on for only a few words to give folks a sense of what's here.</li>
+      {data.allMarkdownRemark.edges.map(({ node }) => (
+        <li><a href={node.fields.slug}><b>{node.frontmatter.title}.</b> ({node.frontmatter.date}).</a> {node.frontmatter.excerpt}</li>
+      ))}
     </ul>
   </Layout>
 )
 
-export default IndexPage
+export const query = graphql `
+  query MyQuery {
+    allMarkdownRemark {
+      edges {
+        node {
+          fields {
+            slug
+          }
+          frontmatter {
+            title
+            excerpt
+            date(formatString: "Do MMMM YYYY")
+          }
+          fields {
+            slug
+          }
+        }
+      }
+    }
+  }
+`
